@@ -1,0 +1,33 @@
+from bs4 import BeautifulSoup
+import requests
+
+def VocabScraper(url):
+    page = requests.get(url)
+    soup = BeautifulSoup(page.text,"html")
+
+    tdTags = soup.find_all("td") 
+
+    result = []
+    temp_list = []
+    
+    #Looping through tdTags to find the Vocabs 
+    for td in tdTags:
+        p_text = td.find('p').text.strip().replace('\xa0', ' ') if td.find('p') else ''
+        temp_list.append(p_text)
+        #Appending every three items that are connected to each other to result 
+        if len(temp_list) == 3:
+            result.append(list(temp_list))
+            temp_list = []
+            
+    #Looping through and converting the the numbers from strings to ints
+    for i in range(len(result)):
+        result[i][0] = int(result[i][0])
+        
+    return result
+
+
+
+Topik1Vocab = VocabScraper("https://www.topikguide.com/6000-most-common-korean-words-1")
+
+
+print(Topik1Vocab)
